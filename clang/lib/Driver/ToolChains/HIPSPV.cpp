@@ -96,8 +96,10 @@ void HIPSPV::Linker::constructLinkAndEmitSpirvCommand(
   }
 
   // Emit SPIR-V binary.
-
-  llvm::opt::ArgStringList TrArgs{"--spirv-max-version=1.1",
+  // We need 1.2 when using warp-level primitivies via sub group extensions.
+  // Strictly put we'd need 1.3 for the standard non-extension shuffle
+  // operations, but it's not supported by any target yet.
+  llvm::opt::ArgStringList TrArgs{"--spirv-max-version=1.2",
                                   "--spirv-ext=+all"};
   InputInfo TrInput = InputInfo(types::TY_LLVM_BC, TempFile, "");
   SPIRV::constructTranslateCommand(C, *this, JA, Output, TrInput, TrArgs);
