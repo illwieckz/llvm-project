@@ -287,8 +287,8 @@ VersionTuple HIPSPVToolChain::computeMSVCVersion(const Driver *D,
 void HIPSPVToolChain::adjustDebugInfoKind(
     llvm::codegenoptions::DebugInfoKind &DebugInfoKind,
     const llvm::opt::ArgList &Args) const {
-  // Debug info generation is disabled for SPIRV-LLVM-Translator
-  // which currently aborts on the presence of DW_OP_LLVM_convert.
-  // TODO: Enable debug info when the SPIR-V backend arrives.
-  DebugInfoKind = llvm::codegenoptions::NoDebugInfo;
+
+  // Restrict the debug info to a kind compatible with llvm-spirv.
+  if (DebugInfoKind > llvm::codegenoptions::DebugLineTablesOnly)
+    DebugInfoKind = llvm::codegenoptions::DebugLineTablesOnly;
 }
