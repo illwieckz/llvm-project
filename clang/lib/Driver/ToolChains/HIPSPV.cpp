@@ -99,8 +99,18 @@ void HIPSPV::Linker::constructLinkAndEmitSpirvCommand(
   // We need 1.2 when using warp-level primitivies via sub group extensions.
   // Strictly put we'd need 1.3 for the standard non-extension shuffle
   // operations, but it's not supported by any target yet.
-  llvm::opt::ArgStringList TrArgs{"--spirv-max-version=1.2",
-                                  "--spirv-ext=+all"};
+  llvm::opt::ArgStringList TrArgs{
+      "--spirv-max-version=1.2",
+      "--spirv-ext=-all"
+
+      // TODO: Consider upstreaming -Xspirv-translator found in intel-llvm
+      //       repository and make it work for SPIR-V toolchains so chipStar may
+      //       control extensions it needs (if/when necessary).
+
+      // Needed for experimental indirect call support.
+      ",+SPV_INTEL_function_pointers"
+      // Needed for shuffles below SPIR-V 1.3
+      ",+SPV_INTEL_subgroups"};
   InputInfo TrInput = InputInfo(types::TY_LLVM_BC, TempFile, "");
   SPIRV::constructTranslateCommand(C, *this, JA, Output, TrInput, TrArgs);
 }
